@@ -535,3 +535,41 @@ async function triggerAnalysis(provider) {
     chrome.runtime.sendMessage({ action: 'analysis_result', error: error.message });
   }
 }
+
+async function updateDeclarativeNetRequestRules() {
+  const enabledLists = await getEnabledFilterLists();
+  if (enabledLists.length === 0) {
+    console.log("No filter lists enabled. Clearing all rules.");
+    // ... (rest of the if block)
+    return;
+  }
+
+  try {
+    const allRules = await fetchAndParseLists(enabledLists);
+    const networkRules = allRules.filter(r => !r.selector);
+    const cosmeticRules = allRules.filter(r => r.selector);
+
+    // Get existing rules to determine the next available ID
+    const existingRules = await chrome.declarativeNetRequest.getDynamicRules();
+    const nextId = Math.max(0, ...existingRules.map(r => r.id)) + 1;
+
+    const newRules = networkRules.map((rule, index) => {
+      // ... (rule mapping logic)
+    });
+
+    // Enforce the dynamic rule limit to prevent errors
+    const MAX_RULES = chrome.declarativeNetRequest.MAX_NUMBER_OF_DYNAMIC_RULES || 5000;
+    const rulesToApply = newRules.slice(0, MAX_RULES - 1); // Slice to just under the limit
+
+    if (rulesToApply.length > 0) {
+        await chrome.declarativeNetRequest.updateDynamicRules({
+            removeRuleIds: existingRules.map(r => r.id), // Clear old rules
+            addRules: rulesToApply
+        });
+        console.log(`Successfully loaded ${rulesToApply.length} ad-blocking rules.`);
+    } else {
+        // ...
+    }
+
+    // ... (rest of the function)
+}
