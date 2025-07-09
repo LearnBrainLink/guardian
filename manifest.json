@@ -1,0 +1,51 @@
+{
+  "manifest_version": 3,
+  "name": "Guardian - News & Ad Blocker",
+  "version": "2.0",
+  "description": "An all-in-one tool to analyze news authenticity and block ads/trackers for a safer browsing experience.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback",
+    "webNavigation",
+    "scripting"
+  ],
+  "optional_permissions": [
+    "webRequest"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "declarative_net_request": {
+    "rule_resources": [{
+      "id": "dynamic_rules",
+      "enabled": true,
+      "path": "rules.json"
+    }]
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "public/placeholder-logo.png",
+      "48": "public/placeholder-logo.png",
+      "128": "public/placeholder-logo.png"
+    }
+  },
+  "icons": {
+    "16": "public/placeholder-logo.png",
+    "48": "public/placeholder-logo.png",
+    "128": "public/placeholder-logo.png"
+  },
+  "options_page": "settings.html",
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ]
+}
